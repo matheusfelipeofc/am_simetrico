@@ -1,0 +1,14 @@
+Input perguntando nome
+
+Se Nome for igual ao nome_dela:
+    entra em outra parte que meio que tenta saber se ela é ela
+    tipo perguntas sobre mim
+    
+    Se provar que ela é ela mesmo ou seja se 70% das perguntas estiverem corretas:
+        Ela irá entrar em uma parte bem interativa mostrando algumas frases e por ultimo o texto falando meu sentimento por ela
+
+
+linguagens: python e javascript
+linguagem de estilo e marcação: html e css
+
+Mais ideias aqui...

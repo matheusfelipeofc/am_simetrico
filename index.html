@@ -1,0 +1,330 @@
+
+<html><head><base href="." />
+    <title>Um presente especial para você</title>
+    <style>
+:root {
+  --primary-color: #ff69b4;
+  --secondary-color: #4a90e2;
+  --bg-color: #fdf2f7;
+  --text-color: #2c3e50;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  text-align: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 600px;  /* Aumenta a largura máxima */
+  padding: 3rem;      /* Aumenta o padding para dar mais espaçamento */
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 1s ease-in;
+  box-sizing: border-box;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background: #eee;
+  border-radius: 5px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+
+.progress {
+  width: 0%;
+  height: 100%;
+  background: var(--primary-color);
+  transition: width 0.5s ease;
+}
+
+.options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.option-button {
+  background: white;
+  border: 2px solid var(--primary-color);
+  color: var(--text-color);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.option-button:hover {
+  background: var(--primary-color);
+  color: white;
+  transform: scale(1.02);
+}
+
+.option-button.selected {
+  background: var(--primary-color);
+  color: white;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+button {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.question {
+  margin: 20px 0;
+  display: none;
+}
+
+.feedback {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 8px;
+  display: none;
+}
+
+.success {
+  background: #d4edda;
+  color: #155724;
+}
+
+.error {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.final-message {
+  display: none;
+  animation: fadeIn 2s ease-in;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 2rem;  /* Diminui o padding em telas menores */
+    width: 90%;     /* Ajusta a largura da container para 90% em dispositivos móveis */
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1.5rem;  /* Reduz ainda mais o padding em telas muito pequenas */
+    width: 95%;       /* Ajusta a largura para 95% em dispositivos móveis menores */
+  }
+  .option-button {
+    padding: 10px 20px;  /* Ajusta o tamanho dos botões para telas menores */
+    font-size: 14px;     /* Diminui o tamanho da fonte */
+  }
+  input, button {
+    font-size: 14px;     /* Ajusta o tamanho da fonte de inputs e botões */
+  }
+}
+
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    </head>
+    <body>
+    
+    <div class="container">
+      <div id="welcome-screen">
+        <h1>Bem-vinda</h1>
+        <p>Por favor, digite seu nome para começar:</p>
+        <input type="text" id="name-input" placeholder="Seu nome...">
+        <button onclick="checkName()">Continuar</button>
+      </div>
+    
+      <div id="quiz-screen" style="display: none;">
+        <div class="progress-bar">
+          <div class="progress" id="progress"></div>
+        </div>
+        <div id="question-container"></div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+    
+      <div id="final-message" class="final-message">
+        <h2>Para você, Emily...</h2>
+        <p id="love-message"></p>
+        <button onclick="restart()">Conversar No Insta?</button>
+      </div>
+    </div>
+    
+    <script>
+    const correctName = "Emily";
+    let currentQuestion = 0;
+    let score = 0;
+    
+    const questions = [
+        {
+            question: "Você me chama de que sempre?",
+            options: ["Chato", "Doido", "Narcisista", "Inteligente"],
+            answer: 2
+        },
+        {
+            question: "Quantos anos eu tenho?",
+            options: ["14", "16", "22 (kkk)", "15"],
+            answer: 3
+        },
+        {
+            question: "Do que mais gosto?",
+            options: ["Moto", "Carro", "Bicicleta", "Skate"],
+            answer: 1
+        },
+        {
+            question: "Do que nós dois gostamos?",
+            options: ["Drift", "Grau", "Estudar(kkk)", "Nenhuma das alternativas"],
+            answer: 0
+        }
+    ];
+    
+    function checkName() {
+        const nameInput = document.getElementById('name-input').value.trim().toLowerCase();
+        if (nameInput === correctName.toLowerCase()) {
+            document.getElementById('welcome-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            showQuestion();
+        } else {
+            showFeedback("Desculpe, mas parece que o nome não corresponde", false);
+        }
+    }
+    
+    function showQuestion() {
+        if (currentQuestion < questions.length) {
+            const questionContainer = document.getElementById('question-container');
+            const currentQ = questions[currentQuestion];
+            
+            let optionsHTML = '<div class="options-container">';
+            currentQ.options.forEach((option, index) => {
+                optionsHTML += `
+                    <button class="option-button" onclick="checkAnswer(${index})">
+                        ${option}
+                    </button>
+                `;
+            });
+            optionsHTML += '</div>';
+    
+            questionContainer.innerHTML = `
+                <h3>${currentQ.question}</h3>
+                ${optionsHTML}
+            `;
+            updateProgress();
+        } else {
+            showResults();
+        }
+    }
+    
+    function checkAnswer(selectedIndex) {
+        const correctAnswer = questions[currentQuestion].answer;
+        
+        const options = document.querySelectorAll('.option-button');
+        options.forEach(opt => opt.classList.remove('selected'));
+        options[selectedIndex].classList.add('selected');
+        
+        if (selectedIndex === correctAnswer) {
+            score++;
+            showFeedback("Isso mesmo!", true);
+        } else {
+            showFeedback("Incorreto!", false);
+        }
+        
+        currentQuestion++;
+        setTimeout(showQuestion, 1000);
+    }
+    
+    function showResults() {
+        const percentage = (score / questions.length) * 100;
+        
+        if (percentage >= 50) {
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('final-message').style.display = 'block';
+            showLoveMessage();
+        } else {
+            showFeedback(`Você acertou apenas ${percentage}% das questões. Vamos tentar novamente?`, false);
+            setTimeout(restart, 2000);
+        }
+    }
+    
+    function showFeedback(message, isSuccess) {
+        const feedback = document.getElementById('feedback');
+        feedback.textContent = message;
+        feedback.style.display = 'block';
+        feedback.className = `feedback ${isSuccess ? 'success' : 'error'}`;
+        
+        setTimeout(() => {
+            feedback.style.display = 'none';
+        }, 2000);
+    }
+    
+    function updateProgress() {
+        const progress = document.getElementById('progress');
+        const percentage = (currentQuestion / questions.length) * 100;
+        progress.style.width = `${percentage}%`;
+    }
+    
+    function showLoveMessage() {
+        const message = `
+        Então... Não sei se consigo dizer isso na sua frente por isso criei esse site, oque não falo por palavras falo por código kkkk. 
+        Mas enfim já deve saber que você é muito especial para mim, e que eu faria tudo para ver você feliz, mas talvez você não saiba de uma coisa.
+        EU TE AMO, e eu sei que somos jovens e tals mas eu tô disposto a fazer oque precisar para dar certo, talvez esse sentimento não seja recíproco, se
+        não for eu entendo e ainda sim quero te ver feliz com quem você realmente ama. Já que talvez eu irei embora tomei coragem para falar isso tudo 
+        (pelo menos escrever isso tudo kkk), mas enfim eu gosto de você Emily, eu não sei me expressar muito mas eu tentei.
+        `
+        const loveMessage = document.getElementById('love-message');
+        let index = 0;
+        
+        function typeWriter() {
+            if (index < message.length) {
+                loveMessage.textContent += message.charAt(index);
+                index++;
+                setTimeout(typeWriter, 50);
+            }
+        }
+        
+        typeWriter();
+    }
+    
+    function restart() {
+    window.location.href = 'https://www.instagram.com';
+}
+    </script>
+    </body></html>
